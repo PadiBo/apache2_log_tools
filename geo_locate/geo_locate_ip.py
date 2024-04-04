@@ -18,7 +18,7 @@ def get_geo_info(ip):
 
 # Lese die IP-Adressen aus der Excel-Datei
 try:
-    df = pd.read_excel('overview.xlsx', sheet_name='IPs')
+    df = pd.read_excel('../overview/overview.xlsx', sheet_name='IPs')
 except FileNotFoundError:
     print("Die Datei 'overview.xlsx' konnte nicht gefunden werden.")
     exit()
