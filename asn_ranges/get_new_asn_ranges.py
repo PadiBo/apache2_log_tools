@@ -10,7 +10,7 @@ def download_extract_file(url, download_path):
     with open(download_path, 'wb') as f:
         f.write(response.content)
 
-    # Entpacke die Datei
+    # unzip files
     with gzip.open(download_path, 'rb') as f_in, open(download_path[:-3], 'wb') as f_out:
         f_out.write(f_in.read())
 
@@ -18,7 +18,7 @@ def calculate_cidr(ip_start, ip_end):
     ip_start = int(IPv4Address(ip_start))
     ip_end = int(IPv4Address(ip_end))
 
-    # Finde die Praefixlaenge durch die Anzahl der gemeinsamen Bits in den beiden IP-Adressen
+    # prefixlenght
     prefix_length = 32
     mask = 0xFFFFFFFF
 
@@ -26,7 +26,7 @@ def calculate_cidr(ip_start, ip_end):
         prefix_length -= 1
         mask <<= 1
 
-    # Erstelle die CIDR-Notation
+    # create CIDR-Notation
     network = IPv4Network((ip_start, prefix_length), strict=False)
     return str(network)
 
@@ -35,20 +35,20 @@ def process_ip2asn(input_file, output_file):
         reader = csv.reader(infile, delimiter='\t')
         writer = csv.writer(outfile)
 
-        # Neue Reihenfolge der Spalten
+        # new order
         header = ["CIDR", "Country", "ASN and ASN Name"]
         writer.writerow(header)
 
         for line in reader:
-            ip_range = calculate_cidr(line[0], line[1])  # CIDR-Bereich berechnen
+            ip_range = calculate_cidr(line[0], line[1])  # CIDR-calculation
             asn = line[2]
             country = line[3]
             asn_name = line[4]
 
-            # Die Spalten "ASN" und "ASN Name" zusammenführen und mit einem Leerzeichen trennen
+            # combine ASN and ASN_name
             combined_asn = f"AS{asn} {asn_name}"
 
-            # Die Reihenfolge der Spalten ändern
+            # change order
             writer.writerow([ip_range, country, combined_asn])
 
 if __name__ == "__main__":
@@ -56,14 +56,14 @@ if __name__ == "__main__":
     download_path = "ip2asn-v4.tsv.gz"
     output_file = "asn_ranges.csv"
 
-    # Datei herunterladen und entpacken
+    # download file
     download_extract_file(download_url, download_path)
 
-    # Verarbeite die heruntergeladene Datei
+    # work with file
     process_ip2asn(download_path[:-3], output_file)
 
-    # Lösche die heruntergeladene und entpackte Datei
+    # delete left over files
     os.remove(download_path[:-3])
     os.remove(download_path)
     
-    print("Verarbeitung abgeschlossen. Ergebnis wurde in output.csv gespeichert.")
+    print("Done. All ANS and ranges are saved to output.csv.")
